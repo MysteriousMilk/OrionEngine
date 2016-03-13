@@ -1,0 +1,142 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <MinimumVisualStudioVersion>10.0</MinimumVisualStudioVersion>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{8B7A916B-1765-40DD-A5FA-B1C417137266}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Orion.Core</RootNamespace>
+    <AssemblyName>Orion.Core</AssemblyName>
+    <DefaultLanguage>en-US</DefaultLanguage>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{786C830F-07A1-408B-BD7F-6EE04809D6DB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <TargetFrameworkProfile>Profile259</TargetFrameworkProfile>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="AnimatedSprite.cs" />
+    <Compile Include="Attributes.cs" />
+    <Compile Include="Constant.cs" />
+    <Compile Include="Factories\ParticlePropertyFactory.cs" />
+    <Compile Include="HueSaturationValue.cs" />
+    <Compile Include="IAttachableObject.cs" />
+    <Compile Include="IParticleProperty.cs" />
+    <Compile Include="IPreProcessorItem.cs" />
+    <Compile Include="ParticleSystemSettings.cs" />
+    <Compile Include="PreProcessor.cs" />
+    <Compile Include="RandomNumber.cs" />
+    <Compile Include="Range.cs" />
+    <Compile Include="Effect\BloomComponent.cs" />
+    <Compile Include="Effect\BloomEffect.cs" />
+    <Compile Include="Effect\BloomSettings.cs" />
+    <Compile Include="Effect\IPostProcessEffect.cs" />
+    <Compile Include="Effect\GenericEffect.cs" />
+    <Compile Include="Effect\PostProcessor.cs" />
+    <Compile Include="Effect\SceneFadeEffect.cs" />
+    <Compile Include="Entity\AnimatedEntity.cs" />
+    <Compile Include="Animation.cs" />
+    <Compile Include="Camera.cs" />
+    <Compile Include="Camera2D.cs" />
+    <Compile Include="Entity\AutonomousAgent.cs" />
+    <Compile Include="Entity\EntityBase.cs" />
+    <Compile Include="Entity\IEntity.cs" />
+    <Compile Include="Event\AnimationStateEventArgs.cs" />
+    <Compile Include="Exceptions.cs" />
+    <Compile Include="Factories\CoreObjectFactory.cs" />
+    <Compile Include="Factories\IFactoryManager.cs" />
+    <Compile Include="Factories\IObjectFactory.cs" />
+    <Compile Include="Factories\PrimitiveFactory.cs" />
+    <Compile Include="Graph\Edge.cs" />
+    <Compile Include="Graph\Vertex.cs" />
+    <Compile Include="ICamera2D.cs" />
+    <Compile Include="IComponent.cs" />
+    <Compile Include="Factories\IDataFactory.cs" />
+    <Compile Include="IDisposableResource.cs" />
+    <Compile Include="IDrawable.cs" />
+    <Compile Include="IFocusable.cs" />
+    <Compile Include="IOrionDataObject.cs" />
+    <Compile Include="IPrimitive.cs" />
+    <Compile Include="IScene.cs" />
+    <Compile Include="ISprite.cs" />
+    <Compile Include="IUpdatable.cs" />
+    <Compile Include="Managers\LogManager.cs" />
+    <Compile Include="Module\IPlatformModuleLoader.cs" />
+    <Compile Include="Module\IStartInfo.cs" />
+    <Compile Include="Module\Module.cs" />
+    <Compile Include="Module\Resource.cs" />
+    <Compile Include="OrionMath.cs" />
+    <Compile Include="OrionEngine.cs" />
+    <Compile Include="OrionObject.cs" />
+    <Compile Include="ParallaxTexture.cs" />
+    <Compile Include="Particle.cs" />
+    <Compile Include="ParticleEmitter.cs" />
+    <Compile Include="Primatives.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ContentManager.cs" />
+    <Compile Include="SceneBase.cs" />
+    <Compile Include="Settings.cs" />
+    <Compile Include="Sprite.cs" />
+    <Compile Include="SpriteDefinition.cs" />
+    <Compile Include="Types.cs" />
+    <Compile Include="UI\Overlay.cs" />
+    <Compile Include="UI\Text.cs" />
+    <Compile Include="Utilities.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Primitives2D\Primitives2D.csproj">
+      <Project>{55687673-07c1-406b-9576-8a3e8a6b2ec4}</Project>
+      <Name>Primitives2D</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="MonoGame.Framework, Version=3.1.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\MonoGame.Framework.Portable.3.2.99.1-Beta\lib\portable-net40+sl50+win+wpa81+wp80+MonoAndroid10+MonoTouch10\MonoGame.Framework.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.IO.Compression, Version=3.9.85.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.Bcl.Compression.3.9.85\lib\portable-net45+win8+wp8+wpa81\System.IO.Compression.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
+  <Import Project="..\..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets" Condition="Exists('..\..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" />
+  <Target Name="EnsureBclBuildImported" BeforeTargets="BeforeBuild" Condition="'$(BclBuildImported)' == ''">
+    <Error Condition="!Exists('..\..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" Text="This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=317567." HelpKeyword="BCLBUILD2001" />
+    <Error Condition="Exists('..\..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" Text="The build restored NuGet packages. Build the project again to include these packages in the build. For more information, see http://go.microsoft.com/fwlink/?LinkID=317568." HelpKeyword="BCLBUILD2002" />
+  </Target>
+  <Import Project="..\..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets" Condition="Exists('..\..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" />
+  <Target Name="EnsureBclBuildImported" BeforeTargets="BeforeBuild" Condition="'$(BclBuildImported)' == ''">
+    <Error Condition="!Exists('..\..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" Text="This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=317567." HelpKeyword="BCLBUILD2001" />
+    <Error Condition="Exists('..\..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" Text="The build restored NuGet packages. Build the project again to include these packages in the build. For more information, see http://go.microsoft.com/fwlink/?LinkID=317568." HelpKeyword="BCLBUILD2002" />
+  </Target>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

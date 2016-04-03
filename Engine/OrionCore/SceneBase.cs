@@ -1,20 +1,17 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Orion.Core.Entity;
+using Orion.Core.Managers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace Orion.Core
 {
-    public class SceneBase : OrionObject, IScene, IDisposable
+    public class SceneBase : GameObject, IScene, IDisposable
     {
         /// <summary>
         /// Scene Graph - separates sprites by ZOrder.
         /// </summary>
-        private Dictionary<int, List<OrionObject>> _sceneGraph;
+        private Dictionary<int, List<GameObject>> _sceneGraph;
 
         /// <summary>
         /// Used to keep the zorder sorted.
@@ -50,7 +47,7 @@ namespace Orion.Core
 
         public SceneBase(GraphicsDevice graphics, ICamera2D camera)
         {
-            _sceneGraph = new Dictionary<int, List<OrionObject>>();
+            _sceneGraph = new Dictionary<int, List<GameObject>>();
             _zorderList = new List<int>();
 
             _spriteBatch = new SpriteBatch(graphics);
@@ -58,18 +55,18 @@ namespace Orion.Core
             Camera = camera;
         }
 
-        public IEnumerable<OrionObject> EnumerateScene()
+        public IEnumerable<GameObject> EnumerateScene()
         {
             foreach (int zorder in _zorderList)
             {
-                foreach (OrionObject obj in _sceneGraph[zorder])
+                foreach (GameObject obj in _sceneGraph[zorder])
                 {
                     yield return obj;
                 }
             }
         }
 
-        public void Add(OrionObject obj)
+        public void Add(GameObject obj)
         {
             int zorder = 0;
 
@@ -83,14 +80,14 @@ namespace Orion.Core
             // for this zorder
             if(_sceneGraph.ContainsKey(zorder))
             {
-                List<OrionObject> spriteList = null;
+                List<GameObject> spriteList = null;
                 if (_sceneGraph.TryGetValue(zorder, out spriteList))
                     spriteList.Add(obj);
             }
             else
             {
                 // if not, we need to create one
-                List<OrionObject> spriteList = new List<OrionObject>();
+                List<GameObject> spriteList = new List<GameObject>();
                 spriteList.Add(obj);
                 _sceneGraph.Add(zorder, spriteList);
             }
@@ -101,11 +98,11 @@ namespace Orion.Core
 
         public virtual void Update(GameTime gameTime)
         {
-            List<OrionObject> toRemove = new List<OrionObject>();
+            List<GameObject> toRemove = new List<GameObject>();
 
             foreach (int zorder in _zorderList)
             {
-                foreach (OrionObject obj in _sceneGraph[zorder])
+                foreach (GameObject obj in _sceneGraph[zorder])
                 {
                     if (obj is IUpdatable)
                         (obj as IUpdatable).Update(gameTime, null);
@@ -118,7 +115,7 @@ namespace Orion.Core
                 }
             }
 
-            foreach (OrionObject obj in toRemove)
+            foreach (GameObject obj in toRemove)
                 RemoveSprite(obj);
         }
 
@@ -127,7 +124,7 @@ namespace Orion.Core
             _spriteBatch.Begin(SpriteSortMode.Deferred, null, null, null, null, null, Camera.Transform);
             foreach (int zorder in _zorderList)
             {
-                foreach (OrionObject obj in _sceneGraph[zorder])
+                foreach (GameObject obj in _sceneGraph[zorder])
                 {
                     if (obj is IDrawable)
                     {
@@ -159,14 +156,14 @@ namespace Orion.Core
             _spriteBatch.End();
         }
 
-        public List<OrionObject> HitTest(Vector2 screenPos)
+        public List<GameObject> HitTest(Vector2 screenPos)
         {
-            List<OrionObject> positiveHits = new List<OrionObject>();
+            List<GameObject> positiveHits = new List<GameObject>();
             Vector2 worldPos = Vector2.Transform(screenPos, Matrix.Invert(this.Camera.Transform));
 
             foreach (int zorder in _zorderList)
             {
-                foreach (OrionObject obj in _sceneGraph[zorder])
+                foreach (GameObject obj in _sceneGraph[zorder])
                 {
                     if (obj is IDrawable)
                     {
@@ -179,13 +176,13 @@ namespace Orion.Core
             return positiveHits;
         }
 
-        private void RemoveSprite(OrionObject obj)
+        private void RemoveSprite(GameObject obj)
         {
             int zorder = 0;
             if (obj is IDrawable)
                 zorder = (obj as IDrawable).ZOrder;
 
-            List<OrionObject> spriteList = null;
+            List<GameObject> spriteList = null;
 
             if (_sceneGraph.TryGetValue(zorder, out spriteList))
             {
@@ -198,7 +195,7 @@ namespace Orion.Core
         {
             foreach (int zorder in _zorderList)
             {
-                foreach (OrionObject obj in _sceneGraph[zorder])
+                foreach (GameObject obj in _sceneGraph[zorder])
                 {
                     if (obj is IDisposableResource)
                     {

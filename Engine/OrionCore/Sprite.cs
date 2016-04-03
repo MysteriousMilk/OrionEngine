@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Orion.Core.Managers;
 using System;
 using System.Collections.Generic;
 using System.Xml;
@@ -7,7 +8,7 @@ using System.Xml.Linq;
 
 namespace Orion.Core
 {
-    public class Sprite : OrionObject, IAttachableObject, IDisposableResource, IDrawable, IFocusable, ISprite
+    public class Sprite : GameObject, IAttachableObject, IDisposableResource, IDrawable, IFocusable, ISprite
     {
         #region Fields
         /// <summary>
@@ -223,7 +224,7 @@ namespace Orion.Core
             _drawRect.Size = new Point(Definition.FrameWidth, Definition.FrameHeight);
         }
 
-        public override object Clone()
+        public override object Clone(bool preserveGuid)
         {
             Sprite clone = new Sprite(_spriteRef);
             clone.Name = this.Name;
@@ -236,7 +237,9 @@ namespace Orion.Core
             clone.Tint = this.Tint;
             clone.Alpha = this.Alpha;
             clone.ZOrder = this.ZOrder;
-            clone.Id = -1;
+
+            if (!preserveGuid)
+                clone.Id = Guid.NewGuid();
 
             return clone;
         }

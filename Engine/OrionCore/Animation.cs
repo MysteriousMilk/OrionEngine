@@ -30,7 +30,7 @@ namespace Orion.Core
                 {
                     _state = value;
 
-                    if (this.AnimationStateChanged != null)
+                    if (AnimationStateChanged != null)
                         AnimationStateChanged(this, new AnimationStateEventArgs(value));
                 }
             }
@@ -40,27 +40,27 @@ namespace Orion.Core
 
         public Animation(string refName, int start, int end, double timePerFrame, bool loop)
         {
-            this.Ref = refName;
-            this.StartFrame = start;
-            this.EndFrame = end;
-            this.TimePerFrame = timePerFrame;
-            this.Loop = loop;
+            Ref = refName;
+            StartFrame = start;
+            EndFrame = end;
+            TimePerFrame = timePerFrame;
+            Loop = loop;
 
             Reset();
         }
 
         public void Reset()
         {
-            this._elapsed = 0.0f;
-            this.CurrentFrame = StartFrame;
-            this._doneAnimating = true;
+            _elapsed = 0.0f;
+            _doneAnimating = true;
+            CurrentFrame = StartFrame;
         }
 
         public void Play()
         {
-            this._elapsed = 0.0f;
-            this.CurrentFrame = StartFrame;
-            this._doneAnimating = false;
+            _elapsed = 0.0f;
+            _doneAnimating = false;
+            CurrentFrame = StartFrame;
         }
 
         public void Update(GameTime gameTime)
@@ -68,7 +68,7 @@ namespace Orion.Core
             // make sure we are still animating
             if (!_doneAnimating)
             {
-                this.State = AnimationState.Animate;
+                State = AnimationState.Animate;
 
                 // get the elapsed time since the last update and add it to elapsed
                 _elapsed += gameTime.ElapsedGameTime.TotalMilliseconds;
@@ -79,14 +79,14 @@ namespace Orion.Core
                 {
                     _elapsed = 0.0f;
 
-                    this.CurrentFrame++;
-                    if (this.CurrentFrame > EndFrame)
+                    CurrentFrame++;
+                    if (CurrentFrame > EndFrame)
                     {
-                        if (this.Loop)
-                            this.CurrentFrame = StartFrame;
+                        if (Loop)
+                            CurrentFrame = StartFrame;
                         else
                         {
-                            this.CurrentFrame = EndFrame;
+                            CurrentFrame = EndFrame;
                             _doneAnimating = true;
                         }
                     }
@@ -94,13 +94,13 @@ namespace Orion.Core
             }
             else
             {
-                this.State = AnimationState.Inanimate;
+                State = AnimationState.Inanimate;
             }
         }
 
         public Animation Clone()
         {
-            return this.MemberwiseClone() as Animation;
+            return MemberwiseClone() as Animation;
         }
     }
 }

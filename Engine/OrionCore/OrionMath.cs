@@ -42,6 +42,17 @@ namespace Orion.Core
             return angle;
         }
 
+        public static Vector2 RotatePointPositive(Vector2 point, Vector2 origin, float angle)
+        {
+            Vector2 relative = point + origin;
+
+            double rads = ToRadians(angle);
+            double x = (relative.X * Math.Cos(rads)) - (relative.Y * Math.Sin(rads));
+            double y = (relative.Y * Math.Cos(rads)) + (relative.X * Math.Sin(rads));
+
+            return (new Vector2((float)x, (float)y) - origin);
+        }
+
         public static Vector2 VectorTruncate(Vector2 original, float max)
         {
             Vector2 vec = original;

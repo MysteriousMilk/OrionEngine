@@ -1,4 +1,5 @@
-﻿using Orion.Core.Module;
+﻿using Orion.Core.Managers;
+using Orion.Core.Module;
 using System.IO;
 using System.IO.Compression;
 
@@ -48,10 +49,10 @@ namespace Orion.Platform.Win32
                         }
                     }
                 }
-                catch (IOException)
+                catch (IOException e)
                 {
-                    //MessageBox.Show("Could not locate module entry [" + entryPath + "].", "Error",
-                    //    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    LogManager.Instance.LogException(e);
+                    LogManager.Instance.LogError("Could not locate module entry [" + entryPath + "].");
                 }
             }
             else
@@ -70,10 +71,10 @@ namespace Orion.Platform.Win32
                         }
                     }
                 }
-                catch (IOException)
+                catch (IOException e)
                 {
-                    //MessageBox.Show("Could not locate module entry [" + entryPath + "].", "Error",
-                    //    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    LogManager.Instance.LogException(e);
+                    LogManager.Instance.LogError("Could not locate module entry [" + entryPath + "].");
                 }
             }
 
@@ -96,10 +97,10 @@ namespace Orion.Platform.Win32
                         }
                     }
                 }
-                catch (IOException)
+                catch (IOException e)
                 {
-                    //MessageBox.Show("Could not locate module entry [" + entryPath + "].", "Error",
-                    //    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    LogManager.Instance.LogException(e);
+                    LogManager.Instance.LogError("Could not locate module entry [" + entryPath + "].");
                 }
             }
             else
@@ -118,10 +119,10 @@ namespace Orion.Platform.Win32
                         }
                     }
                 }
-                catch (IOException)
+                catch (IOException e)
                 {
-                    //MessageBox.Show("Could not locate module entry [" + entryPath + "].", "Error",
-                    //    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    LogManager.Instance.LogException(e);
+                    LogManager.Instance.LogError("Could not locate module entry [" + entryPath + "].");
                 }
             }
 
@@ -157,9 +158,10 @@ namespace Orion.Platform.Win32
                 fs.Close();
 
             }
-            catch(IOException)
+            catch(IOException e)
             {
-                //MessageBox.Show("Could not load database out of the module.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                LogManager.Instance.LogException(e);
+                LogManager.Instance.LogError("Could not load database out of the module.");
                 return string.Empty;
             }
 

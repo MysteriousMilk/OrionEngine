@@ -1,11 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Orion.Core.Factories;
+using Orion.Core.Managers;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Orion.Core
 {
@@ -41,14 +38,14 @@ namespace Orion.Core
         #region Construction
         private OrionEngine()
         {
-            this.IsInitialized = false;
-            this.GraphicsDM = null;
-            this.Components = new List<IComponent>();
+            IsInitialized = false;
+            GraphicsDM = null;
+            Components = new List<IComponent>();
 
-            this.ObjectFactories = new List<IObjectFactory>();
-            this.ObjectFactories.Add(new CoreObjectFactory());
+            ObjectFactories = new List<IObjectFactory>();
+            ObjectFactories.Add(new CoreObjectFactory());
 
-            this.DataFactories = new List<IDataFactory>();
+            DataFactories = new List<IDataFactory>();
         }
         #endregion
 
@@ -98,7 +95,7 @@ namespace Orion.Core
             private set;
         }
 
-        public OrionObject Player
+        public GameObject Player
         {
             get;
             set;
@@ -119,22 +116,22 @@ namespace Orion.Core
 
         public void SetCurrentModule(Module.Module module)
         {
-            this.CurrentModule = module;
+            CurrentModule = module;
         }
 
         public void SetActiveComponent(IComponent component)
         {
-            this.ActiveComponent = component;
+            ActiveComponent = component;
         }
 
         public void RegisterComponent(IComponent component)
         {
-            this.Components.Add(component);
+            Components.Add(component);
         }
 
         public IObjectFactory GetFactoryFor(string objectTypeName)
         {
-            foreach (IObjectFactory fac in this.ObjectFactories)
+            foreach (IObjectFactory fac in ObjectFactories)
             {
                 if (fac.CanHandle(objectTypeName))
                     return fac;
@@ -146,7 +143,7 @@ namespace Orion.Core
         {
             IOrionDataObject dataObject = null;
 
-            foreach (IDataFactory fac in this.DataFactories)
+            foreach (IDataFactory fac in DataFactories)
             {
                 if (fac.CanHandle(dataTypeName))
                 {
@@ -162,7 +159,7 @@ namespace Orion.Core
         {
             IOrionDataObject dataObject = null;
 
-            foreach (IDataFactory fac in this.DataFactories)
+            foreach (IDataFactory fac in DataFactories)
             {
                 if (fac.CanHandle(dataTypeName))
                 {
@@ -176,12 +173,12 @@ namespace Orion.Core
 
         public Vector2 WorldToScreen(Vector2 worldPos)
         {
-            return Vector2.Transform(worldPos, this.ActiveComponent.GetCamera().Transform);
+            return Vector2.Transform(worldPos, ActiveComponent.GetCamera().Transform);
         }
 
         public Vector2 ScreenToWorld(Vector2 screenPos)
         {
-            return Vector2.Transform(screenPos, Matrix.Invert(this.ActiveComponent.GetCamera().Transform));
+            return Vector2.Transform(screenPos, Matrix.Invert(ActiveComponent.GetCamera().Transform));
         }
 
         public double GetRandomDouble()
@@ -191,11 +188,11 @@ namespace Orion.Core
 
         private void SetResolution(int windowSizeX, int windowSizeY, bool isFullscreen)
         {
-            this.GraphicsDM.PreferredBackBufferWidth = windowSizeX;
-            this.GraphicsDM.PreferredBackBufferHeight = windowSizeY;
-            this.GraphicsDM.IsFullScreen = isFullscreen;
-            this.GraphicsDM.ApplyChanges();
-            ContentManager.Instance.Graphics = this.GraphicsDM.GraphicsDevice;
+            GraphicsDM.PreferredBackBufferWidth = windowSizeX;
+            GraphicsDM.PreferredBackBufferHeight = windowSizeY;
+            GraphicsDM.IsFullScreen = isFullscreen;
+            GraphicsDM.ApplyChanges();
+            ContentManager.Instance.Graphics = GraphicsDM.GraphicsDevice;
         }
     }
 }

@@ -50,7 +50,7 @@ namespace Orion.StandardComponent
             return _camera;
         }
 
-        public void AddSceneObject(OrionObject obj)
+        public void AddSceneObject(GameObject obj)
         {
             if(this.CurrentScene != null)
                 this.CurrentScene.Add(obj);

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Orion.Core
 {
-    public class ParticleEmitter : OrionObject, IDrawable, IUpdatable
+    public class ParticleEmitter : GameObject, IDrawable, IUpdatable
     {
         private List<Particle> _particlePool = new List<Particle>();
         private float _elapsedTimeSinceLastSpawn = 0.0f;

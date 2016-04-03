@@ -35,7 +35,12 @@ namespace Orion.Core.Managers
 
         public void LogError(string err)
         {
-            _log.Add("ERROR MESSAGE: " + err);
+            _log.Add("[Error] " + err);
+        }
+
+        public void LogException(Exception e)
+        {
+            _log.Add("[" + e.GetType().Name + "] " + e.Message);
         }
     }
 }

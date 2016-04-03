@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Orion.Core;
 using Orion.Core.Module;
 using SQLite.Net.Interop;
 
@@ -11,12 +12,15 @@ namespace PrimativesTest
     /// </summary>
     public class Game1 : Game
     {
-        GraphicsDeviceManager graphics;
-        SpriteBatch spriteBatch;
+        GraphicsDeviceManager _graphics;
+        SpriteBatch _spriteBatch;
+        Camera2D _camera;
+        SceneBase _scene;
+        Line2D _line;
 
         public Game1(IPlatformModuleLoader loader, ISQLitePlatform dbPlatform)
         {
-            graphics = new GraphicsDeviceManager(this);
+            _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
         }
 
@@ -28,7 +32,11 @@ namespace PrimativesTest
         /// </summary>
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
+            OrionEngine.Initialize(_graphics, Content);
+
+            _camera = new Camera2D(this);
+            _camera.Enabled = true;
+            Components.Add(_camera);
 
             base.Initialize();
         }
@@ -40,9 +48,18 @@ namespace PrimativesTest
         protected override void LoadContent()
         {
             // Create a new SpriteBatch, which can be used to draw textures.
-            spriteBatch = new SpriteBatch(GraphicsDevice);
+            _spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            // TODO: use this.Content to load your game content here
+            _scene = new SceneBase(GraphicsDevice, _camera);
+
+            Rectangle2D rect = new Rectangle2D(Vector2.Zero, 400, 400, Color.Yellow, Color.Black, 2);
+            _scene.Add(rect);
+
+            _line = new Line2D(new Vector2(-200, -0), new Vector2(200, 0), Color.Black, 2);
+            _scene.Add(_line);
+
+            Circle2D circle = new Circle2D(Vector2.Zero, 200, Color.Black, 2);
+            _scene.Add(circle);
         }
 
         /// <summary>
@@ -64,7 +81,9 @@ namespace PrimativesTest
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            // TODO: Add your update logic here
+            _line.Rotation = ((_line.Rotation + 1.0f) * (float)gameTime.ElapsedGameTime.TotalSeconds) - 360.0f;
+
+            _scene.Update(gameTime);
 
             base.Update(gameTime);
         }
@@ -77,7 +96,7 @@ namespace PrimativesTest
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            // TODO: Add your drawing code here
+            _scene.Draw();
 
             base.Draw(gameTime);
         }

@@ -10,7 +10,7 @@ namespace Orion.Core.Factories
     public interface IObjectFactory
     {
         bool CanHandle(string objectTypeName);
-        OrionObject GetObject(string objectTypeName, IFactoryManager manager, Module.Module module, XElement xmlNode);
+        GameObject GetObject(string objectTypeName, IFactoryManager manager, Module.Module module, XElement xmlNode);
         //OrionObject GetObject(string objectTypeName, IFactoryManager manager, SpriteDefinition spriteDef, XElement xmlNode);
     }
 }

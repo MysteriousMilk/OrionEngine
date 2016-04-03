@@ -3,13 +3,11 @@ using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Orion.Core.Entity
+namespace Orion.Core
 {
     [ShowInEditor(false)]
-    public abstract class EntityBase : OrionObject, IDrawable, IEntity, IFocusable, IUpdatable
+    public abstract class Entity : GameObject, IDrawable, IEntity, IFocusable, IUpdatable
     {
         public List<IAttachableObject> AttachedObjects
         {
@@ -52,7 +50,7 @@ namespace Orion.Core.Entity
         /// </summary>
         //public IOrionDataObject Data { get; set; }
 
-        public EntityBase()
+        public Entity()
         {
             Alive = true;
             Velocity = Vector2.Zero;

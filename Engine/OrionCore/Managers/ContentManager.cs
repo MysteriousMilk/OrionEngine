@@ -2,11 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Orion.Core
+namespace Orion.Core.Managers
 {
     public sealed class ContentManager
     {

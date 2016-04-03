@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Orion.Core
+namespace Orion.Core.Effect
 {
     public class PreProcessor
     {

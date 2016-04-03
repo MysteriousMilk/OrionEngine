@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using System;
 using System.Xml;
 using System.Xml.Linq;
 
@@ -28,20 +29,24 @@ namespace Orion.Core.Factories
             return canHandle;
         }
 
-        public OrionObject GetObject(string objectTypeName, IFactoryManager manager, Module.Module module, XElement xmlNode)
+        public GameObject GetObject(string objectTypeName, IFactoryManager manager, Module.Module module, XElement xmlNode)
         {
-            OrionObject obj = null;
+            GameObject obj = null;
             SpriteDefinition spriteDef = null;
             string tag = string.Empty;
             string name = string.Empty;
-            int id = -1;
+            Guid id = Guid.Empty;
 
             foreach (XAttribute attribNode in xmlNode.Attributes())
             {
                 switch (attribNode.Name.LocalName)
                 {
                     case "Id":
-                        id = XmlConvert.ToInt32(attribNode.Value);
+                        try
+                        {
+                            id = Guid.Parse(attribNode.Value);
+                        }
+                        catch (Exception) { }
                         break;
                     case "Name":
                         name = attribNode.Value;
@@ -63,9 +68,9 @@ namespace Orion.Core.Factories
             return obj;
         }
 
-        private OrionObject GetObject(string objectTypeName, IFactoryManager manager, SpriteDefinition spriteDef, XElement xmlNode)
+        private GameObject GetObject(string objectTypeName, IFactoryManager manager, SpriteDefinition spriteDef, XElement xmlNode)
         {
-            OrionObject obj = null;
+            GameObject obj = null;
 
             switch (objectTypeName)
             {

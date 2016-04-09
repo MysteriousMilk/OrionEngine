@@ -12,6 +12,11 @@ namespace Orion.Core
         private static readonly OrionEngine _instance = new OrionEngine();
         public static readonly Random Randomizer = new Random();
 
+        /// <summary>
+        /// Version number of the engine.
+        /// </summary>
+        public const string Version = "0.7.0.0";
+
         public static OrionEngine Instance
         {
             get

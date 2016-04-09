@@ -83,6 +83,8 @@ namespace Orion.Core
                 List<GameObject> spriteList = null;
                 if (_sceneGraph.TryGetValue(zorder, out spriteList))
                     spriteList.Add(obj);
+
+                LogManager.Instance.LogMessage(this, obj, "Game Object Added.");
             }
             else
             {
@@ -90,6 +92,8 @@ namespace Orion.Core
                 List<GameObject> spriteList = new List<GameObject>();
                 spriteList.Add(obj);
                 _sceneGraph.Add(zorder, spriteList);
+
+                LogManager.Instance.LogMessage(this, obj, "Game Object Added.");
             }
 
             _zorderList = _sceneGraph.Keys.ToList();
@@ -187,7 +191,7 @@ namespace Orion.Core
             if (_sceneGraph.TryGetValue(zorder, out spriteList))
             {
                 spriteList.Remove(obj);
-                System.Diagnostics.Debug.WriteLine("Scene Object Removed.");
+                LogManager.Instance.LogMessage(this, obj, "Game Object Removed.");
             }
         }
 

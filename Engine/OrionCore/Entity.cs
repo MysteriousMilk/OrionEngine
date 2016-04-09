@@ -7,9 +7,9 @@ using System.Linq;
 namespace Orion.Core
 {
     [ShowInEditor(false)]
-    public abstract class Entity : GameObject, IDrawable, IEntity, IFocusable, IUpdatable
+    public class Entity : GameObject, IDrawable, IEntity, IFocusable, IUpdatable
     {
-        public List<IAttachableObject> AttachedObjects
+        public List<IAttachable> AttachedObjects
         {
             get;
             protected set;
@@ -56,21 +56,21 @@ namespace Orion.Core
             Velocity = Vector2.Zero;
             ZOrder = 0;
 
-            AttachedObjects = new List<IAttachableObject>();
+            AttachedObjects = new List<IAttachable>();
         }
 
-        public void Attach(IAttachableObject attachable)
+        public void Attach(IAttachable attachable)
         {
             if (!AttachedObjects.Contains(attachable))
                 AttachedObjects.Add(attachable);
         }
 
-        public void Detach(IAttachableObject attachable)
+        public void Detach(IAttachable attachable)
         {
             AttachedObjects.Remove(attachable);
         }
 
-        public IAttachableObject GetAttachableByName(string name)
+        public IAttachable GetAttachableByName(string name)
         {
             return AttachedObjects.Where(obj => obj.Name == name).FirstOrDefault();
         }
@@ -78,17 +78,17 @@ namespace Orion.Core
         public TAttachable GetAttachable<TAttachable>()
         {
             Type type = typeof(TAttachable);
-            IAttachableObject attachable = GetAttachableByType(type);
+            IAttachable attachable = GetAttachableByType(type);
 
             return (TAttachable)attachable;
         }
 
-        public IAttachableObject GetAttachableByType(Type attachableType)
+        public IAttachable GetAttachableByType(Type attachableType)
         {
             return GetAttachables(attachableType).FirstOrDefault();
         }
 
-        public IAttachableObject GetAttachableByType(string typeName)
+        public IAttachable GetAttachableByType(string typeName)
         {
             return GetAttachables(typeName).FirstOrDefault();
         }
@@ -97,21 +97,21 @@ namespace Orion.Core
         {
             Type type = typeof(TAttachable);
 
-            foreach (IAttachableObject attachable in GetAttachables(type))
+            foreach (IAttachable attachable in GetAttachables(type))
                 yield return (TAttachable)attachable;
         }
 
-        public IEnumerable<IAttachableObject> GetAttachables(Type attachableType)
+        public IEnumerable<IAttachable> GetAttachables(Type attachableType)
         {
             return GetAttachables(attachableType.Name);
         }
 
-        public IEnumerable<IAttachableObject> GetAttachables(string typeName)
+        public IEnumerable<IAttachable> GetAttachables(string typeName)
         {
-            foreach (IAttachableObject attachable in AttachedObjects.Where(obj => obj.AttachableType.Name.Equals(typeName)))
+            foreach (IAttachable attachable in AttachedObjects.Where(obj => obj.AttachableType.Name.Equals(typeName)))
                 yield return attachable;
 
-            foreach (IAttachableObject attachable in AttachedObjects)
+            foreach (IAttachable attachable in AttachedObjects)
             {
                 if (attachable.Interfaces.Count(type => type.Name.Equals(typeName)) > 0)
                     yield return attachable;
@@ -191,7 +191,7 @@ namespace Orion.Core
 
         private IEnumerable<IDrawable> EnumerateDrawables()
         {
-            foreach(IAttachableObject attachable in AttachedObjects.Where(attachable => attachable is IDrawable))
+            foreach(IAttachable attachable in AttachedObjects.Where(attachable => attachable is IDrawable))
             {
                 if (attachable is IDrawable)
                     yield return (IDrawable)attachable;
@@ -200,7 +200,7 @@ namespace Orion.Core
 
         private IEnumerable<IUpdatable> EnumerateUpdatables()
         {
-            foreach (IAttachableObject attachable in AttachedObjects.Where(attachable => attachable is IUpdatable))
+            foreach (IAttachable attachable in AttachedObjects.Where(attachable => attachable is IUpdatable))
             {
                 if (attachable is IUpdatable)
                     yield return (IUpdatable)attachable;

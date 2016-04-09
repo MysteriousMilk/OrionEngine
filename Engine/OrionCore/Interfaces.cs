@@ -10,7 +10,7 @@ using System.Collections.Generic;
 /// Attachable objects are game objects that can
 /// be attached to an Entity.
 /// </summary>
-public interface IAttachableObject
+public interface IAttachable
 {
     /// <summary>
     /// Globally unique identifier of the object.

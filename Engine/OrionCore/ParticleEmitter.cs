@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Orion.Core
 {
-    public class ParticleEmitter : GameObject, IDrawable, IUpdatable
+    public class ParticleEmitter : GameObject, IAttachable, IDrawable, IFocusable, IUpdatable
     {
         private List<Particle> _particlePool = new List<Particle>();
         private float _elapsedTimeSinceLastSpawn = 0.0f;
@@ -20,6 +20,22 @@ namespace Orion.Core
         public ParticleSystemSettings Settings { get; set; }
         public Vector2 Position { get; set; }
         public float Rotation { get; set; }
+
+        public Type AttachableType
+        {
+            get { return GetType(); }
+        }
+
+        public virtual IEnumerable<Type> Interfaces
+        {
+            get
+            {
+                yield return typeof(IAttachable);
+                yield return typeof(IDrawable);
+                yield return typeof(IFocusable);
+                yield return typeof(ISprite);
+            }
+        }
 
         /// <summary>
         /// The draw order othe drawable item.
@@ -73,6 +89,12 @@ namespace Orion.Core
             if (parent is IDrawable)
                 parentDrawable = (IDrawable)parent;
 
+            float rotation = Rotation;
+            if (parentDrawable != null)
+                rotation = parentDrawable.Rotation + Rotation;
+
+            Vector2 position = GetRandomPosition(parentDrawable);
+
             // remove dead particles
             PruneParticlePool();
 
@@ -91,9 +113,9 @@ namespace Orion.Core
 
                         Particle p = new Particle(
                             GetRandomTexture(),
-                            GetRandomPosition(parentDrawable),
-                            Settings.StartVelocity.GetNextValue(),
-                            Settings.EndVelocity.GetNextValue(),
+                            position,
+                            OrionMath.RotatePointPositive(Settings.StartVelocity.GetNextValue(), Vector2.Zero, rotation),
+                            OrionMath.RotatePointPositive(Settings.EndVelocity.GetNextValue(), Vector2.Zero, rotation),
                             Settings.Angle.GetNextValue(),
                             Settings.AngularVelocity.GetNextValue(),
                             Settings.StartColor.GetNextValue(),
@@ -140,20 +162,12 @@ namespace Orion.Core
 
         private Vector2 GetRandomPosition(IDrawable parent)
         {
-            Vector2 center = Vector2.Zero;
-            float radians = 0.0f;
-
+            float rotation = Rotation;
             if (parent != null)
-            {
-                radians = (float)(parent.Rotation * (Math.PI / 180));
-                center = parent.Position;
-            }
-            else
-            {
-                radians = (float)(Rotation * (Math.PI / 180));
-            }
+                rotation = parent.Rotation + Rotation;
 
-            Vector2 relPos = Utilities.GetPositionRelative(center, Position.Length(), radians);
+            Vector2 relPos = OrionMath.RotatePointPositive(Position, Vector2.Zero, rotation);
+            relPos += parent.Position;
 
             Range<float> xRange = new Range<float>(
                 relPos.X + Settings.SpawnRadius.X,

@@ -8,7 +8,7 @@ using System.Xml.Linq;
 
 namespace Orion.Core
 {
-    public class Sprite : GameObject, IAttachableObject, IDisposableResource, IDrawable, IFocusable, ISprite
+    public class Sprite : GameObject, IAttachable, IDisposableResource, IDrawable, IFocusable, ISprite
     {
         #region Fields
         /// <summary>
@@ -71,88 +71,96 @@ namespace Orion.Core
         public float Rotation { get; set; }
         #endregion
 
+        #region IAttachable Properties
+        /// <summary>
+        /// Returns the type of attachable.
+        /// </summary>
         public Type AttachableType
         {
             get { return GetType(); }
         }
 
+        /// <summary>
+        /// Returns a collection of all interfaces that the
+        /// attachable object implements.
+        /// </summary>
         public virtual IEnumerable<Type> Interfaces
         {
             get
             {
-                yield return typeof(IAttachableObject);
+                yield return typeof(IAttachable);
                 yield return typeof(IDisposableResource);
                 yield return typeof(IDrawable);
                 yield return typeof(IFocusable);
                 yield return typeof(ISprite);
             }
         }
+        #endregion
 
         public Sprite()
         {
-            this.Definition = new SpriteDefinition();
-            this.Definition.Rows = 1;
-            this.Definition.Columns = 1;
-            this.Definition.FrameWidth = 0;
-            this.Definition.FrameHeight = 0;
-            this.Definition.FrameCount = 1;
+            Definition = new SpriteDefinition();
+            Definition.Rows = 1;
+            Definition.Columns = 1;
+            Definition.FrameWidth = 0;
+            Definition.FrameHeight = 0;
+            Definition.FrameCount = 1;
 
-            this.Position = Vector2.Zero;
-            this.Origin = Vector2.Zero;
-            this.Rotation = 0.0f;
-            this.Scale = 1.0f;
-            this.Tint = Color.White;
-            this.Alpha = 255;
+            Position = Vector2.Zero;
+            Origin = Vector2.Zero;
+            Rotation = 0.0f;
+            Scale = 1.0f;
+            Tint = Color.White;
+            Alpha = 255;
             _spriteRef = string.Empty;
 
-            this.ZOrder = 0;
+            ZOrder = 0;
         }
 
         public Sprite(string spriteRef)
         {
-            this.Texture = ContentManager.Instance.Get(spriteRef, ContentType.Texture) as Texture2D;
+            Texture = (Texture2D)ContentManager.Instance.Get(spriteRef, ContentType.Texture);
 
-            this.Definition = new SpriteDefinition();
-            this.Definition.Rows = 1;
-            this.Definition.Columns = 1;
-            this.Definition.FrameWidth = this.Texture.Width;
-            this.Definition.FrameHeight = this.Texture.Height;
-            this.Definition.FrameCount = 1;
-            this.Definition.ReferenceName = spriteRef;
+            Definition = new SpriteDefinition();
+            Definition.Rows = 1;
+            Definition.Columns = 1;
+            Definition.FrameWidth = Texture.Width;
+            Definition.FrameHeight = Texture.Height;
+            Definition.FrameCount = 1;
+            Definition.ReferenceName = spriteRef;
 
             UpdateDrawRect(0);
 
-            this.Position = Vector2.Zero;
-            this.Origin = new Vector2(_drawRect.Width / 2.0f,
-                _drawRect.Height / 2.0f);
-            this.Rotation = 0.0f;
-            this.Scale = 1.0f;
-            this.Tint = Color.White;
-            this.Alpha = 255;
+            Position = Vector2.Zero;
+            Origin = new Vector2(_drawRect.Width / 2.0f, _drawRect.Height / 2.0f);
+            Rotation = 0.0f;
+            Scale = 1.0f;
+            Tint = Color.White;
+            Alpha = 255;
 
-            this.ZOrder = 0;
+            ZOrder = 0;
 
             _spriteRef = spriteRef;
         }
 
         public Sprite(SpriteDefinition spriteDef)
         {
-            this.Definition = spriteDef;
-            this.Texture = ContentManager.Instance.Get(this.Definition.ReferenceName, ContentType.Texture) as Texture2D;
+            Definition = spriteDef;
+            Texture = (Texture2D)ContentManager.Instance.Get(Definition.ReferenceName, ContentType.Texture);
 
             _drawRect = new Rectangle(0, 0, spriteDef.FrameWidth, spriteDef.FrameHeight);
 
-            this.Position = Vector2.Zero;
-            this.Origin = new Vector2(this.Definition.FrameWidth / 2.0f,
-            this.Definition.FrameHeight / 2.0f);
-            this.Rotation = 0.0f;
-            this.Scale = 1.0f;
-            this.Tint = Color.White;
-            this.Alpha = 255;
+            Position = Vector2.Zero;
+            Origin = new Vector2(Definition.FrameWidth / 2.0f,
+            Definition.FrameHeight / 2.0f);
+            Rotation = 0.0f;
+            Scale = 1.0f;
+            Tint = Color.White;
+            Alpha = 255;
 
-            this.ZOrder = 0;
+            ZOrder = 0;
 
-            _spriteRef = this.Definition.ReferenceName;
+            _spriteRef = Definition.ReferenceName;
         }
 
         public void UpdateDefinition(SpriteDefinition def)
@@ -175,26 +183,19 @@ namespace Orion.Core
 
         public virtual void Draw(SpriteBatch spriteBatch, IDrawable parent)
         {
-            Vector2 finalPosition = Vector2.Zero;
-            float radians = 0.0f;
-
+            float rotation = Rotation;
             if (parent != null)
-            {
-                radians = (float)(parent.Rotation * (Math.PI / 180));
-                finalPosition = Utilities.GetPositionRelative(parent.Position, Position.Length(), radians);
-            }
-            else
-            {
-                radians = (float)(Rotation * (Math.PI / 180));
-                finalPosition = new Vector2(Position.X, Position.Y);
-            }
+                rotation = parent.Rotation + Rotation;
+
+            Vector2 finalPosition = OrionMath.RotatePointPositive(Position, Vector2.Zero, rotation);
+            finalPosition += parent.Position;
 
             spriteBatch.Draw(
                 Texture,
                 finalPosition,
                 _drawRect,
                 new Color(Tint, Alpha),
-                radians,
+                (float)OrionMath.ToRadians(rotation),
                 Origin,
                 Scale,
                 SpriteEffects.None,

@@ -33,16 +33,16 @@ namespace Orion.Core.Effect
 
         public BloomEffect(GraphicsDevice graphics)
         {
-            this.Settings = BloomSettings.PresetSettings[0];
-            this.GraphicsDevice = graphics;
+            Settings = BloomSettings.PresetSettings[0];
+            GraphicsDevice = graphics;
 
             LoadEffects();
         }
 
         public BloomEffect(BloomSettings settings, GraphicsDevice graphics)
         {
-            this.Settings = settings;
-            this.GraphicsDevice = graphics;
+            Settings = settings;
+            GraphicsDevice = graphics;
 
             _bloomTarget1 = new RenderTarget2D(
                 GraphicsDevice,

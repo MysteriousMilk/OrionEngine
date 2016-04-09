@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Orion.Core.Managers;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,6 +14,11 @@ namespace Orion.Core
         private static Settings _instance = null;
         private Settings()
         {
+            ResolutionX = 800;
+            ResolutionY = 600;
+            IsFullscreen = false;
+            MaxParticlesPerSystem = 800;
+
             Load();
         }
 
@@ -33,25 +39,33 @@ namespace Orion.Core
 
         public void Load()
         {
-            XDocument document = XDocument.Load(@"Data\settings.xml");
-
-            foreach(XElement element in document.Element("Settings").Elements())
+            try
             {
-                switch(element.Name.LocalName)
+                XDocument document = XDocument.Load(@"Data\settings.xml");
+
+                foreach (XElement element in document.Element("Settings").Elements())
                 {
-                    case "ResolutionX":
-                        this.ResolutionX = XmlConvert.ToInt32(element.Value);
-                        break;
-                    case "ResolutionY":
-                        this.ResolutionY = XmlConvert.ToInt32(element.Value);
-                        break;
-                    case "IsFullscreen":
-                        this.IsFullscreen = XmlConvert.ToBoolean(element.Value.ToLower());
-                        break;
-                    case "MaxParticlesPerSystem":
-                        this.MaxParticlesPerSystem = XmlConvert.ToInt32(element.Value);
-                        break;
+                    switch (element.Name.LocalName)
+                    {
+                        case "ResolutionX":
+                            ResolutionX = XmlConvert.ToInt32(element.Value);
+                            break;
+                        case "ResolutionY":
+                            ResolutionY = XmlConvert.ToInt32(element.Value);
+                            break;
+                        case "IsFullscreen":
+                            IsFullscreen = XmlConvert.ToBoolean(element.Value.ToLower());
+                            break;
+                        case "MaxParticlesPerSystem":
+                            MaxParticlesPerSystem = XmlConvert.ToInt32(element.Value);
+                            break;
+                    }
                 }
+            }
+            catch (Exception e)
+            {
+                LogManager.Instance.LogException(e);
+                LogManager.Instance.LogMessage(this, null, "Settings file not found.  Using default settings.");
             }
         }
     }

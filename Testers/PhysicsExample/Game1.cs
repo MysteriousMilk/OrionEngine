@@ -4,10 +4,11 @@ using Microsoft.Xna.Framework.Input;
 using Orion.Core;
 using Orion.Core.Managers;
 using Orion.Core.Module;
+using Orion.Core.Physics;
 using SQLite.Net.Interop;
 using System;
 
-namespace ParticleSystemExample
+namespace PhysicsExample
 {
     /// <summary>
     /// This is the main type for your game.
@@ -16,9 +17,10 @@ namespace ParticleSystemExample
     {
         GraphicsDeviceManager _graphics;
         SpriteBatch _spriteBatch;
-        Camera2D _camera;
         Scene _scene;
-        Entity _ship;
+        Player _player;
+
+        KeyboardState _prevKeyState;
 
         public Game1(IPlatformModuleLoader loader, ISQLitePlatform dbPlatform)
         {
@@ -34,12 +36,10 @@ namespace ParticleSystemExample
         /// </summary>
         protected override void Initialize()
         {
-            LogManager.Instance.SetOutputStream(Console.Out);
             OrionEngine.Initialize(this, _graphics);
+            OrionEngine.Instance.RegisterComponent(new PhysicsComponent(this, new Vector2(0.0f, 9.8f), 64f));
 
-            _camera = new Camera2D(this);
-            _camera.Enabled = true;
-            Components.Add(_camera);
+            LogManager.Instance.SetOutputStream(Console.Out);
 
             base.Initialize();
         }
@@ -53,52 +53,33 @@ namespace ParticleSystemExample
             // Create a new SpriteBatch, which can be used to draw textures.
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            ContentManager.Instance.Load("default_par.png", "def_particle", ContentType.Texture);
-            ContentManager.Instance.Load("gen_figher_01.png", "fighter", ContentType.Texture);
+            ContentManager.Instance.Load("green.png", "GreenBlock", ContentType.Texture);
+            ContentManager.Instance.Load("ground.png", "GroundBlock", ContentType.Texture);
+            ContentManager.Instance.Load("player_body.png", "PlayerBase", ContentType.Texture);
+            ContentManager.Instance.Load("arm_back.png", "ArmBack", ContentType.Texture);
+            ContentManager.Instance.Load("arm_front.png", "ArmFront", ContentType.Texture);
+            ContentManager.Instance.Load("gun1.png", "Gun", ContentType.Texture);
 
-            _scene = new Scene(GraphicsDevice, _camera);
+            _scene = new Scene(GraphicsDevice, OrionEngine.Instance.GetComponent<Camera2D>());
 
-            Sprite shipSprite = new Sprite("fighter");
-            shipSprite.ZOrder = 2;
+            for (int x = -256; x <= 256; x += 64)
+            {
+                Entity floorBlock = new Entity();
+                floorBlock.Attach(new Sprite("GroundBlock"));
 
-            _ship = new Entity();
-            _ship.Attach(shipSprite);
+                BoxCollider collider = OrionEngine.Instance.GetComponent<PhysicsComponent>().CreateBoxCollider(64, 64, 1, ColliderType.Static);
+                floorBlock.Attach(collider);
 
-            ParticleSystemSettings pss = new ParticleSystemSettings(
-                OrionEngine.Randomizer,
-                ContentManager.Instance.Get("def_particle", ContentType.Texture) as Texture2D
-                );
-            ParticleEmitter emitter = new ParticleEmitter(pss);
-            emitter.Settings.StartVelocity = new Range<Vector2>(
-                new Vector2(5, 15),
-                new Vector2(-5, 15),
-                OrionEngine.Randomizer
-                );
-            emitter.Settings.EndVelocity = new Range<Vector2>(
-                new Vector2(5, 15),
-                new Vector2(-5, 15),
-                OrionEngine.Randomizer
-                );
-            emitter.Settings.StartColor = new Range<Color>(
-                Color.Yellow,
-                Color.Orange,
-                OrionEngine.Randomizer
-                );
-            emitter.Settings.EndColor = new Range<Color>(
-                new Color(Color.Yellow, 25),
-                new Color(Color.Orange, 25),
-                OrionEngine.Randomizer
-                );
-            emitter.Settings.Alpha = new Range<int>(150, 25, OrionEngine.Randomizer);
-            emitter.Settings.Size = new Range<float>(0.7f, 0.2f, OrionEngine.Randomizer);
-            emitter.Start();
-            emitter.Position = new Vector2(0, 20);
+                floorBlock.Position = new Vector2(x, 192);
 
-            _ship.Attach(emitter);
-            _ship.Position = new Vector2(0, -100);
-            _ship.Rotation = 0;
+                _scene.Add(floorBlock);
+            }
 
-            _scene.Add(_ship);
+            _player = new Player();
+            _player.Position = new Vector2(0, -128);
+            _scene.Add(_player);
+
+            OrionEngine.Instance.CurrentScene = _scene;
         }
 
         /// <summary>
@@ -120,15 +101,7 @@ namespace ParticleSystemExample
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            if (Keyboard.GetState().IsKeyDown(Keys.D))
-            {
-                float rotation = _ship.Rotation + 25f * (float)gameTime.ElapsedGameTime.TotalSeconds;
-                if (rotation > 360)
-                    rotation -= 360;
-                _ship.Rotation = rotation;
-            }
-
-            _scene.Update(gameTime);
+            _prevKeyState = Keyboard.GetState();
 
             base.Update(gameTime);
         }
@@ -139,9 +112,7 @@ namespace ParticleSystemExample
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.Black);
-
-            _scene.Draw();
+            GraphicsDevice.Clear(Color.CornflowerBlue);
 
             base.Draw(gameTime);
         }

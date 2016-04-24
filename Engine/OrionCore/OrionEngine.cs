@@ -15,7 +15,7 @@ namespace Orion.Core
         /// <summary>
         /// Version number of the engine.
         /// </summary>
-        public const string Version = "0.7.0.0";
+        public const string Version = "0.9.0.0";
 
         public static OrionEngine Instance
         {
@@ -27,16 +27,18 @@ namespace Orion.Core
             }
         }
 
-        public static void Initialize(GraphicsDeviceManager deviceMangager, Microsoft.Xna.Framework.Content.ContentManager content)
+        public static void Initialize(Game game, GraphicsDeviceManager graphicsDM)
         {
-            _instance.GraphicsDM = deviceMangager;
+            _instance.GraphicsDM = graphicsDM;
+            _instance._Game = game;
 
-            ContentManager.Instance = new ContentManager(content);
-            ContentManager.Instance.Graphics = deviceMangager.GraphicsDevice;
+            ContentManager.Instance = new ContentManager(game.Content);
+            ContentManager.Instance.Graphics = game.GraphicsDevice;
 
             _instance.SetResolution(Settings.Instance.ResolutionX, Settings.Instance.ResolutionY, Settings.Instance.IsFullscreen);
 
             _instance.IsInitialized = true;
+            _instance.RegisterComponent(new StandardGameComponent(game));
         }
         #endregion
 
@@ -45,13 +47,19 @@ namespace Orion.Core
         {
             IsInitialized = false;
             GraphicsDM = null;
-            Components = new List<IComponent>();
 
             ObjectFactories = new List<IObjectFactory>();
             ObjectFactories.Add(new CoreObjectFactory());
 
             DataFactories = new List<IDataFactory>();
+
+            SceneFactories = new List<ISceneFactory>();
+            SceneFactories.Add(new CoreSceneFactory());
         }
+        #endregion
+
+        #region Fields
+        internal Game _Game = null;
         #endregion
 
         #region Properties
@@ -82,22 +90,23 @@ namespace Orion.Core
             private set;
         }
 
-        /// <summary>
-        /// Registered Engine Components
-        /// </summary>
-        public List<IComponent> Components
+        public IScene CurrentScene
         {
-            get;
-            private set;
-        }
+            get
+            {
+                StandardGameComponent component = GetComponent<StandardGameComponent>();
+                if (component != null)
+                    return component.CurrentScene;
 
-        /// <summary>
-        /// The current scene being rendered to the screen.
-        /// </summary>
-        public IComponent ActiveComponent
-        {
-            get;
-            private set;
+                return null;
+            }
+            set
+            {
+
+                StandardGameComponent component = GetComponent<StandardGameComponent>();
+                if (component != null && !ReferenceEquals(value, component))
+                    component.CurrentScene = value;
+            }
         }
 
         public GameObject Player
@@ -117,6 +126,12 @@ namespace Orion.Core
             get;
             set;
         }
+
+        public IList<ISceneFactory> SceneFactories
+        {
+            get;
+            set;
+        }
         #endregion
 
         public void SetCurrentModule(Module.Module module)
@@ -124,24 +139,52 @@ namespace Orion.Core
             CurrentModule = module;
         }
 
-        public void SetActiveComponent(IComponent component)
+        public void RegisterComponent(IGameComponent component)
         {
-            ActiveComponent = component;
-        }
-
-        public void RegisterComponent(IComponent component)
-        {
-            Components.Add(component);
-        }
-
-        public IObjectFactory GetFactoryFor(string objectTypeName)
-        {
-            foreach (IObjectFactory fac in ObjectFactories)
+            foreach (IGameComponent compToCheck in _Game.Components)
             {
-                if (fac.CanHandle(objectTypeName))
-                    return fac;
+                if (ReferenceEquals(compToCheck, component))
+                    return;
             }
-            return null;
+
+            _Game.Components.Add(component);
+        }
+
+        public TComponent GetComponent<TComponent>()
+        {
+            Type type = typeof(TComponent);
+
+            foreach (IGameComponent component in _Game.Components)
+            {
+                if (component.GetType().Equals(type))
+                    return (TComponent)component;
+            }
+
+            return default(TComponent);
+        }
+
+        public TFactory GetFactoryFor<TFactory>(string objectTypeName)
+        {
+            Type facType = typeof(TFactory);
+
+            if (facType.Equals(typeof(IObjectFactory)))
+            {
+                foreach (IObjectFactory fac in ObjectFactories)
+                {
+                    if (fac.CanHandle(objectTypeName))
+                        return (TFactory)fac;
+                }
+            }
+            else if (facType.Equals(typeof(ISceneFactory)))
+            {
+                foreach (ISceneFactory fac in ObjectFactories)
+                {
+                    if (fac.CanHandle(objectTypeName))
+                        return (TFactory)fac;
+                }
+            }
+
+            return default(TFactory);
         }
 
         public IOrionDataObject GetDataObject(string dataTypeName, int id)
@@ -178,12 +221,22 @@ namespace Orion.Core
 
         public Vector2 WorldToScreen(Vector2 worldPos)
         {
-            return Vector2.Transform(worldPos, ActiveComponent.GetCamera().Transform);
+            Camera2D camera = GetComponent<Camera2D>();
+
+            if (camera == null)
+                throw new InvalidOperationException("Operation cannot be performed without a registerd camera.");
+
+            return Vector2.Transform(worldPos, camera.Transform);
         }
 
         public Vector2 ScreenToWorld(Vector2 screenPos)
         {
-            return Vector2.Transform(screenPos, Matrix.Invert(ActiveComponent.GetCamera().Transform));
+            Camera2D camera = GetComponent<Camera2D>();
+
+            if (camera == null)
+                throw new InvalidOperationException("Operation cannot be performed without a registerd camera.");
+
+            return Vector2.Transform(screenPos, Matrix.Invert(camera.Transform));
         }
 
         public double GetRandomDouble()

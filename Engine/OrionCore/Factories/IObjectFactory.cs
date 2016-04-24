@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Linq;
+﻿using System.Xml.Linq;
 
 namespace Orion.Core.Factories
 {
@@ -11,6 +6,5 @@ namespace Orion.Core.Factories
     {
         bool CanHandle(string objectTypeName);
         GameObject GetObject(string objectTypeName, IFactoryManager manager, Module.Module module, XElement xmlNode);
-        //OrionObject GetObject(string objectTypeName, IFactoryManager manager, SpriteDefinition spriteDef, XElement xmlNode);
     }
 }

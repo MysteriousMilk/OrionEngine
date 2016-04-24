@@ -40,6 +40,19 @@ public interface IAttachable
 }
 
 /// <summary>
+/// Contract for ai steering behaviors.
+/// </summary>
+public interface IBehavior
+{
+    /// <summary>
+    /// Computes the force required for the given
+    /// steering behavior.
+    /// </summary>
+    /// <returns></returns>
+    Vector2 ComputeForce();
+}
+
+/// <summary>
 /// Contract for the camera in the game engine.
 /// </summary>
 public interface ICamera2D
@@ -109,10 +122,58 @@ public interface ICamera2D
     bool IsInView(Vector2 position, Texture2D texture);
 
     /// <summary>
+    /// Determines whether the target is in view given the specified position.
+    /// This can be used to increase performance by not drawing objects
+    /// directly in the viewport
+    /// </summary>
+    /// <param name="position">The position.</param>
+    /// <param name="sprite">The sprite.</param>
+    /// <returns>
+    ///     <c>true</c> if [is in view] [the specified position]; otherwise, <c>false</c>.
+    /// </returns>
+    bool IsInView(Vector2 position, Sprite sprite);
+
+    /// <summary>
+    /// Determines whether the target is in view given the specified position.
+    /// This can be used to increase performance by not drawing objects
+    /// directly in the viewport
+    /// </summary>
+    /// <param name="position">The position.</param>
+    /// <param name="entity">The entity.</param>
+    /// <returns>
+    ///     <c>true</c> if [is in view] [the specified position]; otherwise, <c>false</c>.
+    /// </returns>
+    bool IsInView(Vector2 position, Entity entity);
+
+    /// <summary>
     /// The boundary of the camera.
     /// </summary>
     /// <returns></returns>
     Rectangle Bounds();
+}
+
+public enum ColliderType
+{
+    Static,
+    Kinematic,
+    Dynamic
+}
+
+public interface ICollider
+{
+    Vector2 Position { get; set; }
+    Vector2 Velocity { get; set; }
+    float Rotation { get; set; }
+    float Mass { get; set; }
+    float Friction { get; set; }
+    float Restitution { get; set; }
+    ColliderType Type { get; set; }
+    bool UseRotation { get; set; }
+
+    void ApplyForce(Vector2 force, Vector2 point);
+    void ApplyTorque(float torque);
+    void ApplyLinearImpulse(Vector2 impulse);
+    void ApplyAngularImpulse(float impulse);
 }
 
 /// <summary>
@@ -181,9 +242,9 @@ public interface IDrawable
     int ZOrder { get; set; }
 
     /// <summary>
-    /// The resource reference of the texture.
+    /// The bounding box of the drawable.
     /// </summary>
-    //string ResourceReference { get; }
+    /// <returns>The bounding box as a rectangle</returns>
     Rectangle Bounds();
 
     /// <summary>
@@ -321,6 +382,17 @@ public interface IScene
     ICamera2D Camera { get; }
 
     /// <summary>
+    /// List of scene variables.
+    /// </summary>
+    IEnumerable<GameVariable> Variables { get; }
+
+    /// <summary>
+    /// Registers a variable with the scene.
+    /// </summary>
+    /// <param name="variable"></param>
+    void RegisterVariable(GameVariable variable);
+
+    /// <summary>
     /// Enumerates through all objects in the scene.
     /// </summary>
     /// <returns>Enumerable of game objects.</returns>
@@ -450,4 +522,16 @@ public interface IUpdatable
     /// <param name="gameTime">The current game time.</param>
     /// <param name="parent">The game object's parent (can be null).</param>
     void Update(GameTime gameTime, IUpdatable parent);
+}
+
+public struct Dimension
+{
+    public float Width;
+    public float Height;
+
+    public Dimension(float width, float height)
+    {
+        Width = width;
+        Height = height;
+    }
 }

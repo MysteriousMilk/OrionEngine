@@ -188,7 +188,9 @@ namespace Orion.Core
                 rotation = parent.Rotation + Rotation;
 
             Vector2 finalPosition = OrionMath.RotatePointPositive(Position, Vector2.Zero, rotation);
-            finalPosition += parent.Position;
+
+            if (parent != null)
+                finalPosition += parent.Position;
 
             spriteBatch.Draw(
                 Texture,

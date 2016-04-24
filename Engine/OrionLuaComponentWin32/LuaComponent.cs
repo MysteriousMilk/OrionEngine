@@ -12,6 +12,24 @@ namespace OrionLuaComponentWin32
         private LuaComponent()
         {
             _lua = new Lua();
+
+            _lua.RegisterFunction("GetModuleVariable", GetType().GetMethod("GetModuleVariable"));
+            _lua.RegisterFunction("GetSceneVariable", GetType().GetMethod("GetSceneVariable"));
+        }
+
+        public void BuildVariableTable()
+        {
+            if (OrionEngine.Instance.CurrentModule != null)
+            {
+                foreach (GameVariable variable in OrionEngine.Instance.CurrentModule.Variables)
+                    _lua[variable.Name] = variable.Value;
+            }
+
+            if (OrionEngine.Instance.CurrentModule != null)
+            {
+                foreach (GameVariable variable in OrionEngine.Instance.CurrentScene.Variables)
+                    _lua[variable.Name] = variable.Value;
+            }
         }
 
         public void ExecuteScript(string scriptRef)
@@ -25,6 +43,34 @@ namespace OrionLuaComponentWin32
             {
                 LogManager.Instance.LogError("Script [" + scriptRef + "] could not be executed.");
             }
+        }
+
+        public object GetModuleVariable(string varName)
+        {
+            if (OrionEngine.Instance.CurrentModule != null)
+            {
+                foreach (GameVariable variable in OrionEngine.Instance.CurrentModule.Variables)
+                {
+                    if (variable.Name.Equals(varName))
+                        return variable.Value;
+                }
+            }
+
+            return 0;
+        }
+
+        public object GetSceneVariable(string varName)
+        {
+            if (OrionEngine.Instance.CurrentScene != null)
+            {
+                foreach (GameVariable variable in OrionEngine.Instance.CurrentScene.Variables)
+                {
+                    if (variable.Name.Equals(varName))
+                        return variable.Value;
+                }
+            }
+
+            return 0;
         }
     }
 }

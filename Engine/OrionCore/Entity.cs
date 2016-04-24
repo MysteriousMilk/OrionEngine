@@ -7,8 +7,40 @@ using System.Linq;
 namespace Orion.Core
 {
     [ShowInEditor(false)]
-    public class Entity : GameObject, IDrawable, IEntity, IFocusable, IUpdatable
+    public class Entity : GameObject, IAttachable, IDrawable, IEntity, IFocusable, IUpdatable
     {
+        #region Fields
+        private Vector2 _position;
+        private float _rotation;
+        protected bool _physicsFlag = false;
+        #endregion
+
+        #region IAttachable Properties
+        /// <summary>
+        /// Returns the type of attachable.
+        /// </summary>
+        public Type AttachableType
+        {
+            get { return GetType(); }
+        }
+
+        /// <summary>
+        /// Returns a collection of all interfaces that the
+        /// attachable object implements.
+        /// </summary>
+        public virtual IEnumerable<Type> Interfaces
+        {
+            get
+            {
+                yield return typeof(IAttachable);
+                yield return typeof(IDrawable);
+                yield return typeof(IEntity);
+                yield return typeof(IFocusable);
+                yield return typeof(IUpdatable);
+            }
+        }
+        #endregion
+
         public List<IAttachable> AttachedObjects
         {
             get;
@@ -16,19 +48,65 @@ namespace Orion.Core
         }
 
         /// <summary>
-        /// The graphical representation of the entity.
-        /// </summary>
-        public Sprite Sprite { get; set; }
-
-        /// <summary>
         /// The position of the entity.
         /// </summary>
-        public Vector2 Position { get; set; }
+        public Vector2 Position
+        {
+            get
+            {
+                if (_physicsFlag)
+                {
+                    ICollider c = GetAttachable<ICollider>();
+                    return c.Position;
+                }
+                return _position;
+            }
+            set
+            {
+                if (_physicsFlag)
+                {
+                    ICollider c = GetAttachable<ICollider>();
+                    c.Position = value;
+                }
+                else
+                {
+                    _position = value;
+                }
+            }
+        }
 
         /// <summary>
         /// The entity's rotation in degrees.
         /// </summary>
-        public float Rotation { get; set; }
+        public float Rotation
+        {
+            get
+            {
+                if (_physicsFlag)
+                {
+                    ICollider c = GetAttachable<ICollider>();
+
+                    if (c.UseRotation)
+                        return c.Rotation;
+                }
+                return _rotation;
+            }
+            set
+            {
+                if (_physicsFlag)
+                {
+                    ICollider c = GetAttachable<ICollider>();
+
+                    if (c.UseRotation)
+                    {
+                        c.Rotation = value;
+                        return;
+                    }
+                }
+
+                _rotation = value;
+            }
+        }
 
         /// <summary>
         /// Whether the entity is still alive/valid or not.
@@ -36,24 +114,19 @@ namespace Orion.Core
         public bool Alive { get; set; }
 
         /// <summary>
-        /// Velocity vector for the entity.
-        /// </summary>
-        public Vector2 Velocity { get; set; }
-
-        /// <summary>
         /// The draw order othe drawable item.
         /// </summary>
         public int ZOrder { get; set; }
 
         /// <summary>
-        /// Data associated with the entity.
+        /// Draw effect for the drawable.
+        /// This only effects texture based drawables.
         /// </summary>
-        //public IOrionDataObject Data { get; set; }
+        public SpriteEffects SpriteEffect { get; set; }
 
         public Entity()
         {
             Alive = true;
-            Velocity = Vector2.Zero;
             ZOrder = 0;
 
             AttachedObjects = new List<IAttachable>();
@@ -63,6 +136,9 @@ namespace Orion.Core
         {
             if (!AttachedObjects.Contains(attachable))
                 AttachedObjects.Add(attachable);
+
+            if (attachable is ICollider)
+                _physicsFlag = true;
         }
 
         public void Detach(IAttachable attachable)
@@ -173,10 +249,24 @@ namespace Orion.Core
             return new Rectangle((int)topLeft.X, (int)topLeft.Y, width, height);
         }
 
+        public void Flip(SpriteEffects flipDirection)
+        {
+            if ((SpriteEffect == SpriteEffects.None && flipDirection == SpriteEffects.FlipHorizontally) ||
+                (SpriteEffect == SpriteEffects.FlipHorizontally && flipDirection == SpriteEffects.None))
+            {
+                foreach (IDrawable drawable in EnumerateDrawables().OrderBy(drawable => drawable.ZOrder))
+                {
+                    //Vector2 invertVec = new Vector2(-1.0f, 0.0f);
+                    //drawable.SpriteEffect = flipDirection;
+                    //drawable.Position *= invertVec;
+                }
+            }
+
+            SpriteEffect = flipDirection;
+        }
+
         public virtual void Update(GameTime gameTime, IUpdatable parent)
         {
-            Position += Velocity;
-
             foreach (IUpdatable updatable in EnumerateUpdatables())
                 updatable.Update(gameTime, this);
         }

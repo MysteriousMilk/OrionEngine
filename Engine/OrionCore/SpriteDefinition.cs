@@ -34,38 +34,38 @@ namespace Orion.Core
 
         public SpriteDefinition()
         {
-            this.Rows = 0;
-            this.Columns = 0;
-            this.FrameWidth = 0;
-            this.FrameHeight = 0;
-            this.FrameCount = 0;
-            this.AnimationList = new Dictionary<string, Animation>();
+            Rows = 0;
+            Columns = 0;
+            FrameWidth = 0;
+            FrameHeight = 0;
+            FrameCount = 0;
+            AnimationList = new Dictionary<string, Animation>();
         }
 
         public SpriteDefinition(string refName, string path, int rows, int columns, int width, int height)
         {
-            this.ReferenceName = refName;
-            this.Path = path;
-            this.Rows = rows;
-            this.Columns = columns;
-            this.FrameWidth = width;
-            this.FrameHeight = FrameHeight;
-            this.FrameCount = rows * columns;
-            this.AnimationList = new Dictionary<string, Animation>();
+            ReferenceName = refName;
+            Path = path;
+            Rows = rows;
+            Columns = columns;
+            FrameWidth = width;
+            FrameHeight = height;
+            FrameCount = rows * columns;
+            AnimationList = new Dictionary<string, Animation>();
         }
 
         public SpriteDefinition Clone()
         {
-            SpriteDefinition clone = this.MemberwiseClone() as SpriteDefinition;
+            SpriteDefinition clone = MemberwiseClone() as SpriteDefinition;
 
             clone.AnimationList = new Dictionary<string, Animation>();
-            foreach (KeyValuePair<string, Animation> pair in this.AnimationList)
+            foreach (KeyValuePair<string, Animation> pair in AnimationList)
                 clone.AnimationList.Add(pair.Key, pair.Value.Clone());
 
             return clone;
         }
 
-        public static SpriteDefinition LoadFromModule(Orion.Core.Module.Module module, string reference)
+        public static SpriteDefinition LoadFromModule(Module.Module module, string reference)
         {
             SpriteDefinition spriteDef = null;
 

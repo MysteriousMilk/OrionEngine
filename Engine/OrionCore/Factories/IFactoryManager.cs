@@ -9,8 +9,9 @@ namespace Orion.Core.Factories
     public interface IFactoryManager
     {
         IList<IObjectFactory> ObjectFactories { get; }
+        IList<ISceneFactory> SceneFactories { get; }
         IList<IDataFactory> DataFactories { get; }
 
-        IObjectFactory GetFactoryFor(string objectTypeName);
+        TFactory GetFactoryFor<TFactory>(string objectTypeName);
     }
 }

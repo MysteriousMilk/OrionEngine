@@ -1,6 +1,7 @@
 ﻿using System;
 using C3.XNA;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace Orion.Core
 {
@@ -95,7 +96,7 @@ namespace Orion.Core
         /// Determines how the primative is drawn to the screen.
         /// </summary>
         /// <param name="spriteBatch">The sprite batch that this drawable will be drawn under.</param>
-        public void Draw(Microsoft.Xna.Framework.Graphics.SpriteBatch spriteBatch, IDrawable parent)
+        public void Draw(SpriteBatch spriteBatch, IDrawable parent)
         {
             int x = (int)(Position.X - Origin.X);
             int y = (int)(Position.Y - Origin.Y);
@@ -189,7 +190,7 @@ namespace Orion.Core
         /// Determines how the primative is drawn to the screen.
         /// </summary>
         /// <param name="spriteBatch">The sprite batch that this drawable will be drawn under.</param>
-        public void Draw(Microsoft.Xna.Framework.Graphics.SpriteBatch spriteBatch, IDrawable parent)
+        public void Draw(SpriteBatch spriteBatch, IDrawable parent)
         {
             int sides = (int)(Radius / 4);
             Primitives2D.DrawCircle(spriteBatch, Position, Radius, sides, BorderColor, BorderWidth);
@@ -284,7 +285,7 @@ namespace Orion.Core
         /// Determines how the primative is drawn to the screen.
         /// </summary>
         /// <param name="spriteBatch">The sprite batch that this drawable will be drawn under.</param>
-        public void Draw(Microsoft.Xna.Framework.Graphics.SpriteBatch spriteBatch, IDrawable parent)
+        public void Draw(SpriteBatch spriteBatch, IDrawable parent)
         {
             Primitives2D.DrawLine(spriteBatch, EndPoint1, EndPoint2, Color, Thickness);
         }

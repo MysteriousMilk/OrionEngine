@@ -6,12 +6,17 @@ using System.Collections.Generic;
 using System.Linq;
 namespace Orion.Core
 {
-    public class SceneBase : GameObject, IScene, IDisposable
+    public class Scene : GameObject, IScene, IDisposable
     {
         /// <summary>
         /// Scene Graph - separates sprites by ZOrder.
         /// </summary>
         private Dictionary<int, List<GameObject>> _sceneGraph;
+
+        /// <summary>
+        /// List of scene variables.
+        /// </summary>
+        private List<GameVariable> _variables;
 
         /// <summary>
         /// Used to keep the zorder sorted.
@@ -45,14 +50,37 @@ namespace Orion.Core
             private set;
         }
 
-        public SceneBase(GraphicsDevice graphics, ICamera2D camera)
+        public Dimension Dimensions
         {
+            get;
+            internal set;
+        }
+
+        public IEnumerable<GameVariable> Variables
+        {
+            get
+            {
+                return _variables;
+            }
+        }
+
+        public Scene(GraphicsDevice graphics, ICamera2D camera)
+        {
+            _variables = new List<GameVariable>();
+
             _sceneGraph = new Dictionary<int, List<GameObject>>();
             _zorderList = new List<int>();
 
             _spriteBatch = new SpriteBatch(graphics);
             _graphics = graphics;
             Camera = camera;
+
+            Dimensions = new Dimension(0.0f, 0.0f);
+        }
+
+        public void RegisterVariable(GameVariable variable)
+        {
+            _variables.Add(variable);
         }
 
         public IEnumerable<GameObject> EnumerateScene()
@@ -208,6 +236,22 @@ namespace Orion.Core
                     }
                 }
             }
+        }
+
+        public TObject GetObject<TObject>(string name)
+        {
+            Type type = typeof(TObject);
+
+            foreach (int zorder in _zorderList)
+            {
+                foreach (GameObject obj in _sceneGraph[zorder])
+                {
+                    if (obj.GetType().Equals(type) && obj.Name.Equals(name))
+                        return (TObject)Convert.ChangeType(obj, type);
+                }
+            }
+
+            return default(TObject);
         }
     }
 }

@@ -20,9 +20,19 @@ namespace Orion.Core.Module
     public class Module
     {
         private Dictionary<ResourceType, Dictionary<string, string>> _resourceMap;
+        private List<GameVariable> _variables = new List<GameVariable>();
+
         public IPlatformModuleLoader Loader { get; set; }
         public IStartInfo StartInfo { get; set; }
         public string DatabasePath { get; set; }
+
+        public IEnumerable<GameVariable> Variables
+        {
+            get
+            {
+                return _variables;
+            }
+        }
 
         public Module(IPlatformModuleLoader loader, IStartInfo startInfo)
         {
@@ -46,6 +56,11 @@ namespace Orion.Core.Module
             LoadResFile();
             LoadModuleHeader();
             SetupDatabase();
+        }
+
+        public void RegisterVariable(GameVariable variable)
+        {
+            _variables.Add(variable);
         }
 
         private void SetupResourceMap()

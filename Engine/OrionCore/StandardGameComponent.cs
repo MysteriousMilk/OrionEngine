@@ -1,23 +1,18 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Orion.Core;
 using Orion.Core.Effect;
+using Orion.Core.Factories;
 using Orion.Core.Managers;
-using Orion.Core.Module;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Xml.Linq;
 
-namespace Orion.StandardComponent
+namespace Orion.Core
 {
-    public class StandardGameComponent : DrawableGameComponent, IComponent
+    public class StandardGameComponent : DrawableGameComponent
     {
         #region Fields
         private RenderTarget2D _renderTarget;
         private GraphicsDevice _graphicsDevice;
-        private ICamera2D _camera;
         #endregion
 
         public IScene CurrentScene
@@ -38,22 +33,28 @@ namespace Orion.StandardComponent
             internal set;
         }
 
-        public StandardGameComponent(Game game, ICamera2D camera)
+        public StandardGameComponent(Game game)
             : base(game)
         {
             _graphicsDevice = game.GraphicsDevice;
-            _camera = camera;
-        }
 
-        public ICamera2D GetCamera()
-        {
-            return _camera;
+
+            Camera2D camera = OrionEngine.Instance.GetComponent<Camera2D>();
+
+            if (camera == null)
+            {
+                camera = new Camera2D(game);
+                camera.Enabled = true;
+                OrionEngine.Instance.RegisterComponent(camera);
+            }
+
+            OrionEngine.Instance.RegisterComponent(this);
         }
 
         public void AddSceneObject(GameObject obj)
         {
-            if(this.CurrentScene != null)
-                this.CurrentScene.Add(obj);
+            if(CurrentScene != null)
+                CurrentScene.Add(obj);
         }
 
         public RenderTarget2D GetSnapshot()
@@ -73,13 +74,17 @@ namespace Orion.StandardComponent
             return renderTarget;
         }
 
-        public void LoadSceneFromModule(Module module, string sceneRef)
+        public void LoadSceneFromModule(Module.Module module, string sceneRef)
         {
             try
             {
-                this.CurrentScene = StandardScene.LoadFromModule(module, sceneRef, _graphicsDevice, _camera);
+                XDocument doc = XDocument.Parse(module.GetFileXML(sceneRef, ResourceType.Scene));
 
-                // should unload old resources here
+                XElement root = doc.Element("Scene");
+                string typeName = root.Attribute("Type").Value;
+
+                ISceneFactory fac = OrionEngine.Instance.GetFactoryFor<ISceneFactory>(typeName);
+                CurrentScene = fac.GetScene(typeName, OrionEngine.Instance, module, root);
             }
             catch(Exception)
             {
@@ -114,8 +119,8 @@ namespace Orion.StandardComponent
 
         public override void Update(GameTime gameTime)
         {
-            if (this.CurrentScene != null)
-                this.CurrentScene.Update(gameTime);
+            if (CurrentScene != null)
+                CurrentScene.Update(gameTime);
 
             PostProcessor.Update(gameTime);
 
@@ -130,8 +135,8 @@ namespace Orion.StandardComponent
             GraphicsDevice.SetRenderTarget(_renderTarget);
             GraphicsDevice.Clear(Color.Black);
 
-            if (this.CurrentScene != null)
-                this.CurrentScene.Draw();
+            if (CurrentScene != null)
+                CurrentScene.Draw();
 
             PostProcessor.Apply(_renderTarget, null);
 

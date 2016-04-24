@@ -36,10 +36,19 @@
   <ItemGroup>
     <Compile Include="AnimatedSprite.cs" />
     <Compile Include="Attributes.cs" />
+    <Compile Include="Behaviors\ArriveBehavior.cs" />
+    <Compile Include="Behaviors\PursuitBehavior.cs" />
+    <Compile Include="Behaviors\SeekBehavior.cs" />
+    <Compile Include="Behaviors\WanderBehavior.cs" />
+    <Compile Include="CompoundSprite.cs" />
     <Compile Include="Constant.cs" />
+    <Compile Include="Factories\CoreSceneFactory.cs" />
+    <Compile Include="Factories\ISceneFactory.cs" />
     <Compile Include="Factories\ParticlePropertyFactory.cs" />
+    <Compile Include="GameVariable.cs" />
     <Compile Include="HueSaturationValue.cs" />
     <Compile Include="Interfaces.cs" />
+    <Compile Include="MovableEntity.cs" />
     <Compile Include="ParticleSystemSettings.cs" />
     <Compile Include="Effect\PreProcessor.cs" />
     <Compile Include="Primitives2D.cs" />
@@ -53,7 +62,6 @@
     <Compile Include="Effect\SceneFadeEffect.cs" />
     <Compile Include="Animation.cs" />
     <Compile Include="Camera2D.cs" />
-    <Compile Include="Behaviors\AutonomousAgent.cs" />
     <Compile Include="Entity.cs" />
     <Compile Include="Event\AnimationStateEventArgs.cs" />
     <Compile Include="Exceptions.cs" />
@@ -69,21 +77,26 @@
     <Compile Include="OrionMath.cs" />
     <Compile Include="OrionEngine.cs" />
     <Compile Include="GameObject.cs" />
-    <Compile Include="ParallaxTexture.cs" />
+    <Compile Include="ParallaxSurface.cs" />
     <Compile Include="Particle.cs" />
     <Compile Include="ParticleEmitter.cs" />
     <Compile Include="Primatives.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Managers\ContentManager.cs" />
-    <Compile Include="SceneBase.cs" />
+    <Compile Include="Scene.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="Sprite.cs" />
     <Compile Include="SpriteDefinition.cs" />
+    <Compile Include="ParallaxScene.cs" />
+    <Compile Include="StandardGameComponent.cs" />
     <Compile Include="Types.cs" />
     <Compile Include="Text.cs" />
     <Compile Include="Utilities.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="FarseerPhysics.Portable">
+      <HintPath>..\..\Dependancies\FarseerPhysics.Portable.dll</HintPath>
+    </Reference>
     <Reference Include="MonoGame.Framework, Version=3.1.2.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\MonoGame.Framework.Portable.3.2.99.1-Beta\lib\portable-net40+sl50+win+wpa81+wp80+MonoAndroid10+MonoTouch10\MonoGame.Framework.dll</HintPath>
       <Private>True</Private>

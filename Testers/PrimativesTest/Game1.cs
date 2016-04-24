@@ -15,7 +15,7 @@ namespace PrimativesTest
         GraphicsDeviceManager _graphics;
         SpriteBatch _spriteBatch;
         Camera2D _camera;
-        SceneBase _scene;
+        Scene _scene;
         Line2D _line;
 
         public Game1(IPlatformModuleLoader loader, ISQLitePlatform dbPlatform)
@@ -32,7 +32,7 @@ namespace PrimativesTest
         /// </summary>
         protected override void Initialize()
         {
-            OrionEngine.Initialize(_graphics, Content);
+            OrionEngine.Initialize(this, _graphics);
 
             _camera = new Camera2D(this);
             _camera.Enabled = true;
@@ -50,7 +50,7 @@ namespace PrimativesTest
             // Create a new SpriteBatch, which can be used to draw textures.
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            _scene = new SceneBase(GraphicsDevice, _camera);
+            _scene = new Scene(GraphicsDevice, _camera);
 
             Rectangle2D rect = new Rectangle2D(Vector2.Zero, 400, 400, Color.Yellow, Color.Black, 2);
             _scene.Add(rect);

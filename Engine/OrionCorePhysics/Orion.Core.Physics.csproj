@@ -1,15 +1,15 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <MinimumVisualStudioVersion>10.0</MinimumVisualStudioVersion>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{8A888985-00F3-4C45-A7FA-B6020684C57E}</ProjectGuid>
+    <ProjectGuid>{CB23AEA8-8121-48B3-9517-8D8F930CDEE2}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Orion.StandardComponent</RootNamespace>
-    <AssemblyName>Orion.StandardComponent</AssemblyName>
+    <RootNamespace>Orion.Core.Physics</RootNamespace>
+    <AssemblyName>Orion.Core.Physics</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{786C830F-07A1-408B-BD7F-6EE04809D6DB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -34,18 +34,19 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="BoxCollider.cs" />
+    <Compile Include="CircleCollider.cs" />
+    <Compile Include="Collider.cs" />
+    <Compile Include="PhysicsComponent.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="StandardGameComponent.cs" />
-    <Compile Include="StandardScene.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="MonoGame.Framework, Version=3.1.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\MonoGame.Framework.Portable.3.2.99.1-Beta\lib\portable-net40+sl50+win+wpa81+wp80+MonoAndroid10+MonoTouch10\MonoGame.Framework.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="FarseerPhysics.Portable">
+      <HintPath>..\..\Dependancies\FarseerPhysics.Portable.dll</HintPath>
     </Reference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
+    <Reference Include="MonoGame.Framework">
+      <HintPath>..\..\packages\MonoGame.Framework.Portable.3.2.99.1-Beta\lib\portable-net40+sl50+win+wpa81+wp80+MonoAndroid10+MonoTouch10\MonoGame.Framework.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\OrionCore\Orion.Core.csproj">

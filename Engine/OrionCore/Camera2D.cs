@@ -74,7 +74,7 @@ namespace Orion.Core
             base.Update(gameTime);
         }
 
-        public Microsoft.Xna.Framework.Rectangle Bounds()
+        public Rectangle Bounds()
         {
             return new Rectangle((int)(Position.X - Origin.X),
                                  (int)(Position.Y - Origin.Y),
@@ -95,12 +95,61 @@ namespace Orion.Core
         public bool IsInView(Vector2 position, Texture2D texture)
         {
             // If the object is not within the horizontal bounds of the screen
-
             if ((position.X + texture.Width) < (Position.X - Origin.X) || (position.X) > (Position.X + Origin.X))
                 return false;
 
             // If the object is not within the vertical bounds of the screen
             if ((position.Y + texture.Height) < (Position.Y - Origin.Y) || (position.Y) > (Position.Y + Origin.Y))
+                return false;
+
+            // In View
+            return true;
+        }
+
+        /// <summary>
+        /// Determines whether the target is in view given the specified position.
+        /// This can be used to increase performance by not drawing objects
+        /// directly in the viewport
+        /// </summary>
+        /// <param name="position">The position.</param>
+        /// <param name="sprite">The sprite.</param>
+        /// <returns>
+        ///     <c>true</c> if [is in view] [the specified position]; otherwise, <c>false</c>.
+        /// </returns>
+        public bool IsInView(Vector2 position, Sprite sprite)
+        {
+            // If the object is not within the horizontal bounds of the screen
+            if ((position.X + sprite.Bounds().Width) < (Position.X - Origin.X) || (position.X) > (Position.X + Origin.X))
+                return false;
+
+            // If the object is not within the vertical bounds of the screen
+            if ((position.Y + sprite.Bounds().Height) < (Position.Y - Origin.Y) || (position.Y) > (Position.Y + Origin.Y))
+                return false;
+
+            // In View
+            return true;
+        }
+
+        /// <summary>
+        /// Determines whether the target is in view given the specified position.
+        /// This can be used to increase performance by not drawing objects
+        /// directly in the viewport
+        /// </summary>
+        /// <param name="position">The position.</param>
+        /// <param name="entity">The entity.</param>
+        /// <returns>
+        ///     <c>true</c> if [is in view] [the specified position]; otherwise, <c>false</c>.
+        /// </returns>
+        public bool IsInView(Vector2 position, Entity entity)
+        {
+            Rectangle bounds = entity.Bounds();
+
+            // If the object is not within the horizontal bounds of the screen
+            if ((position.X + bounds.Width) < (Position.X - Origin.X) || (position.X) > (Position.X + Origin.X))
+                return false;
+
+            // If the object is not within the vertical bounds of the screen
+            if ((position.Y + bounds.Height) < (Position.Y - Origin.Y) || (position.Y) > (Position.Y + Origin.Y))
                 return false;
 
             // In View
